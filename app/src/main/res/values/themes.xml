@@ -17,4 +17,8 @@
     <style name="Theme.NoteWork.ProgressBarLogin">
         <item name="android:colorAccent">@color/white</item>
     </style>
+
+    <style name="Theme.NoteWork.BottomNavigation">
+        <item name="colorPrimary">#055948</item>
+    </style>
 </resources>

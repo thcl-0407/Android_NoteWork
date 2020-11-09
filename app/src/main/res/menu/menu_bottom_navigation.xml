@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/im_note" android:icon="@drawable/ic_baseline_note_24" android:title="Ghi Chú"/>
+    <item android:id="@+id/im_remind" android:icon="@drawable/ic_baseline_calendar_today_24" android:title="Nhắc Nhở"/>
+    <item android:id="@+id/im_profile" android:icon="@drawable/ic_baseline_person_24" android:title="Profile"/>
+</menu>
