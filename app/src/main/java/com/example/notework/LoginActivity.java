@@ -1,5 +1,6 @@
 package com.example.notework;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
     Button btnOpen_SignUp;
     Button btnLogin;
+    Button btnQuenMatKhau;
 
     ProgressBar prb_login;
 
@@ -49,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         Init_Data();
         btnOpen_SignUp_Click();
         btnLogin_Click();
+        btnQuenMatKhau_Click();
     }
 
     protected void Init_Data() {
@@ -57,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnOpen_SignUp = (Button) findViewById(R.id.btnOpen_SignUp);
         btnLogin = (Button) findViewById(R.id.btnDo_Login);
+        btnQuenMatKhau = (Button) findViewById(R.id.btnQuenMatKhau);
 
         prb_login = (ProgressBar) findViewById(R.id.prb_login);
         Sprite wave = new Wave();
@@ -105,6 +109,17 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    //Click Nút "Quên Mật Khẩu"
+    private void btnQuenMatKhau_Click(){
+        btnQuenMatKhau.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, QuenMatKhauActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
     //Call API Đăng Nhập
     protected void Login(User user){
         DataClient dataClient = APIUtils.getData();
@@ -115,14 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                 Message message = (Message) response.body();
                 if(message != null){
                     if (message.getSuccess() == 1){
-                        SharedPreferences preferences = getSharedPreferences("data_login", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("email", user.getEmail());
-                        editor.commit();
-
-                        Intent intent = new Intent(LoginActivity.this, NotesActivity.class);
-                        startActivity(intent);
-                        finish();
+                        SaveProfile(user.getEmail());
                     }else {
                         Toast.makeText(LoginActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
                         container_form.setVisibility(View.VISIBLE);
@@ -155,5 +163,46 @@ public class LoginActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    /*
+        Call API để get thông tin cá nhân mới nhất của người dùng
+     */
+    private void SaveProfile(String Email) {
+        DataClient dataClient = APIUtils.getData();
+        Call<Message> call = dataClient.GetUserByEmail(Email);
+        call.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, Response<Message> response) {
+                Message message = (Message) response.body();
+                if (message != null) {
+                    if (message.getUser().size() == 1) {
+                        int UserID = message.getUser().get(0).getUserId();
+
+                        //Lưu lại mã người dùng
+                        SharedPreferences preferences_profile = getSharedPreferences("data_login", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences_profile.edit();
+                        editor.putString("email", Email);
+                        editor.putInt("user_id", UserID);
+                        editor.commit();
+
+                        Intent intent = new Intent(LoginActivity.this, NotesActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }else {
+                        Toast.makeText(LoginActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
+                        container_form.setVisibility(View.VISIBLE);
+                        prb_login.setVisibility(View.GONE);
+                    }
+                } else {
+                    Log.e("API Error", "Null");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+                Log.e("Retrofit Error Save UserID", t.getMessage());
+            }
+        });
     }
 }

@@ -3,6 +3,8 @@ package com.example.notework.Models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class Message {
 
     @SerializedName("success")
@@ -14,13 +16,17 @@ public class Message {
 
     @SerializedName("users")
     @Expose
-    private User user;
+    private ArrayList<User> user;
 
-    public User getUser() {
+    @SerializedName("notes")
+    @Expose
+    private ArrayList<Note> notes;
+
+    public ArrayList<User> getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(ArrayList<User> user) {
         this.user = user;
     }
 
@@ -38,5 +44,13 @@ public class Message {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public ArrayList<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(ArrayList<Note> notes) {
+        this.notes = notes;
     }
 }
