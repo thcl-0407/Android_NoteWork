@@ -29,6 +29,8 @@ import com.example.notework.Models.User;
 import com.example.notework.Retrofit.APIUtils;
 import com.example.notework.Retrofit.DataClient;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.github.ybq.android.spinkit.sprite.Sprite;
+import com.github.ybq.android.spinkit.style.ThreeBounce;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import retrofit2.Call;

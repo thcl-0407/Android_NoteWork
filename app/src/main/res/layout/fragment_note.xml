@@ -34,7 +34,7 @@
             android:id="@+id/btnOpenSearchNote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="5dp"
             android:background="@drawable/circle_button"
             android:padding="3dp"
             android:src="@drawable/ic_baseline_search_24"
@@ -90,12 +90,27 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.github.ybq.android.spinkit.SpinKitView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:layout_constraintTop_toBottomOf="@+id/container_search_note"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/prb_loading_note"
+        android:layout_marginTop="80dp"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:visibility="gone"
+        app:SpinKit_Color="#055948"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/srlGhiChu"
         app:layout_constraintTop_toBottomOf="@+id/container_search_note"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingLeft="25dp"
-        android:paddingRight="25dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:layout_width="match_parent"
         android:layout_height="0dp">
 

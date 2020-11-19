@@ -27,6 +27,22 @@
             android:layout_height="wrap_content"></ImageButton>
 
         <Button
+            android:id="@+id/btnXoaGhiChu"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:background="@android:color/transparent"
+            android:fontFamily="@font/cabin_medium"
+            android:text="Xoá"
+            android:textAllCaps="false"
+            android:textColor="#055948"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnLuuGhiChu"
+            app:layout_constraintTop_toTopOf="parent"></Button>
+
+        <Button
             android:id="@+id/btnLuuGhiChu"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +54,7 @@
             android:fontFamily="@font/cabin_medium"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"></Button>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

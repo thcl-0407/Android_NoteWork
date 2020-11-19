@@ -31,4 +31,10 @@ public interface DataClient {
 
     @GET("note/id={id}")
     Call<Message> GetNoteByUserId(@Path("id") int UserID);
+
+    @POST("note/update")
+    Call<Message> UpdateNote(@Body Note note);
+
+    @POST("note/delete/id={id}")
+    Call<Message> DeleteNote(@Path("id") int NoteID);
 }

@@ -1,5 +1,6 @@
 package com.example.notework;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -175,17 +176,53 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(status){
-                    Intent intent = new Intent(SignUpActivity.this, NotesActivity.class);
-                    startActivity(intent);
-                    finish();
+                    SaveProfile(etEmail_SignUp.getText().toString());
                 }
-
-                container_form_sign_up.setVisibility(View.VISIBLE);
-                prb_sign_up.setVisibility(View.GONE);
             }
         });
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    /*
+        Call API để get thông tin cá nhân mới nhất của người dùng
+     */
+    private void SaveProfile(String Email) {
+        DataClient dataClient = APIUtils.getData();
+        Call<Message> call = dataClient.GetUserByEmail(Email);
+        call.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, Response<Message> response) {
+                Message message = (Message) response.body();
+                if (message != null) {
+                    if (message.getUser().size() == 1) {
+                        int UserID = message.getUser().get(0).getUserId();
+
+                        //Lưu lại mã người dùng
+                        SharedPreferences preferences_profile = getSharedPreferences("data_login", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences_profile.edit();
+                        editor.putString("email", Email);
+                        editor.putInt("user_id", UserID);
+                        editor.commit();
+
+                        Intent intent = new Intent(SignUpActivity.this, NotesActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }else {
+                        Toast.makeText(SignUpActivity.this, "Đăng Ki Thất Bại", Toast.LENGTH_SHORT).show();
+                        container_form_sign_up.setVisibility(View.VISIBLE);
+                        prb_sign_up.setVisibility(View.GONE);
+                    }
+                } else {
+                    Log.e("API Error", "Null");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+                Log.e("Retrofit Error Save UserID", t.getMessage());
+            }
+        });
     }
 }

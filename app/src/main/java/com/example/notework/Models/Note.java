@@ -3,7 +3,9 @@ package com.example.notework.Models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Note {
+import java.io.Serializable;
+
+public class Note implements Serializable {
     @SerializedName("note_id")
     @Expose
     private Integer noteId;
