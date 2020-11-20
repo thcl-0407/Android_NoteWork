@@ -55,8 +55,15 @@ public class NoteDetailActivity extends AppCompatActivity {
         btnLuuGhiChu_Click();
         btnXoaGhiChu_Click();
 
-        //Load Nội Dung Ghi Chú
+        //Ẩn Nút Xoá Ghi Chú
+        if(NOTE_CODE == ADD_CODE){
+            btnXoaGhiChu.setVisibility(View.GONE);
+        }
+
+        //Load Nội Dung Ghi Chú và Hiện Nút Xoá Ghi Chú
         if(NOTE_CODE == EDIT_CODE){
+            btnXoaGhiChu.setVisibility(View.VISIBLE);
+
             Bundle bundle = getIntent().getBundleExtra("NoteEdit_Bundle");
             Note note = (Note) bundle.getSerializable("NoteEdit");
 

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#D7FFF8"
     tools:context=".NoteDetailActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,6 +63,7 @@
         android:background="@drawable/border_round_edit_note"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -116,6 +116,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvGhiChu"
+            android:clickable="true"
+            android:focusable="true"
+            android:longClickable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

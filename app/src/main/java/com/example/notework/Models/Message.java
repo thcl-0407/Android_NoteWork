@@ -22,6 +22,10 @@ public class Message {
     @Expose
     private ArrayList<Note> notes;
 
+    @SerializedName("reminds")
+    @Expose
+    private ArrayList<Remind> reminds;
+
     public ArrayList<User> getUser() {
         return user;
     }
@@ -52,5 +56,13 @@ public class Message {
 
     public void setNotes(ArrayList<Note> notes) {
         this.notes = notes;
+    }
+
+    public ArrayList<Remind> getReminds() {
+        return reminds;
+    }
+
+    public void setReminds(ArrayList<Remind> reminds) {
+        this.reminds = reminds;
     }
 }

@@ -33,6 +33,7 @@
             android:src="@drawable/ic_baseline_search_24"
             android:background="@drawable/circle_button"
             android:padding="3dp"
+            android:visibility="gone"
             android:layout_marginEnd="5dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnThemNhacNho"
@@ -94,12 +95,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></CalendarView>
 
-    <ListView
-        android:id="@+id/lvReminds"
+    <com.github.ybq.android.spinkit.SpinKitView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         app:layout_constraintTop_toBottomOf="@+id/cvRemind"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/prb_loading_remind"
+        android:layout_marginTop="60dp"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        app:SpinKit_Style="ThreeBounce"
+        android:visibility="visible"
+        app:SpinKit_Color="#055948"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <ListView
+        android:id="@+id/lvReminds"
+        app:layout_constraintTop_toBottomOf="@+id/prb_loading_remind"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"></ListView>
 </androidx.constraintlayout.widget.ConstraintLayout>

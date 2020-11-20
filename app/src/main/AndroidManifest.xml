@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NoteWork"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SuaThongTinActivity"></activity>
+        <activity android:name=".RemindDetailActivity"></activity>
+        <activity android:name=".SuaThongTinActivity" />
         <activity android:name=".NoteDetailActivity" />
         <activity android:name=".DoiMatKhauActivity" />
         <activity android:name=".QuenMatKhauActivity" />
