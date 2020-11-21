@@ -2,8 +2,10 @@ package com.example.notework;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,13 +26,25 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.notework.CustomAdapter.NhacNhoAdapter;
+import com.example.notework.CustomDate.MyCustomDate;
 import com.example.notework.Models.Message;
 import com.example.notework.Models.Remind;
+import com.example.notework.Notifier.NotifierAlarm;
 import com.example.notework.Retrofit.APIUtils;
 import com.example.notework.Retrofit.DataClient;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
+import java.net.URISyntaxException;
+import java.sql.Struct;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.Timer;
 
 import retrofit2.Call;
@@ -326,6 +340,9 @@ public class RemindDetailActivity extends AppCompatActivity {
                     if (message.getSuccess() == 0) {
                         Toast.makeText(RemindDetailActivity.this, "Có Lỗi Xảy Ra", Toast.LENGTH_SHORT).show();
                     } else {
+                        //Set Thông Báo
+                        SetRemind(remind);
+
                         Intent intent02 = new Intent(RemindDetailActivity.this, NotesActivity.class);
                         intent02.putExtra("NgayThucHien", DateRemind);
                         setResult(RESULT_OK, intent02);
@@ -339,7 +356,7 @@ public class RemindDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
-                Log.e("Retrofit Error Loading Notes", t.getMessage());
+
             }
         });
     }
@@ -356,6 +373,9 @@ public class RemindDetailActivity extends AppCompatActivity {
                     if (message.getSuccess() == 0) {
                         Toast.makeText(RemindDetailActivity.this, "Có Lỗi Xảy Ra", Toast.LENGTH_SHORT).show();
                     } else {
+                        //Set Thông Báo
+                        SetRemind(remind);
+
                         Intent intent02 = new Intent(RemindDetailActivity.this, NotesActivity.class);
                         intent02.putExtra("NgayThucHien", DateRemind);
                         setResult(RESULT_OK, intent02);
@@ -369,7 +389,7 @@ public class RemindDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
-                Log.e("Retrofit Error Loading Notes", t.getMessage());
+
             }
         });
     }
@@ -399,8 +419,36 @@ public class RemindDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
-                Log.e("Retrofit Error Delete Remind", t.getMessage());
+
             }
         });
+    }
+
+    private void SetRemind(Remind remind){
+        int Year = MyCustomDate.GetYear(remind.getDateRemind());
+        int Month = MyCustomDate.GetMonth(remind.getDateRemind());
+        int Day = MyCustomDate.GetDay(remind.getDateRemind());
+        int Hour = MyCustomDate.GetHour(remind.getTimeRemind());
+        int Minute = MyCustomDate.GetMinute(remind.getTimeRemind());
+
+        /*
+        Log.e("Nam", String.valueOf(Year));
+        Log.e("Thang", String.valueOf(Month));
+        Log.e("Ngay", String.valueOf(Day));
+        Log.e("Gio", String.valueOf(Hour));
+        Log.e("Minute", String.valueOf(Minute));*/
+
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+07:00"));
+        calendar.set(Year, (Month - 1), Day, Hour, Minute, 0);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("NhacNho", remind);
+
+        Intent intent = new Intent(RemindDetailActivity.this, NotifierAlarm.class);
+        intent.putExtra("NhacNhoBundle", bundle);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(RemindDetailActivity.this, remind.getUserId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 }

@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,6 +24,13 @@ import com.example.notework.Models.Message;
 import com.example.notework.Models.Note;
 import com.example.notework.Retrofit.APIUtils;
 import com.example.notework.Retrofit.DataClient;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URISyntaxException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,10 +49,19 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     int NOTE_CODE;
 
+    private Socket SocketClient;{
+        try {
+            SocketClient = IO.socket("http://192.168.3.4:3000");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_detail);
+        SocketClient.connect();
 
         //Hide Status Bar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -54,14 +72,30 @@ public class NoteDetailActivity extends AppCompatActivity {
         btnBackToNotes_Click();
         btnLuuGhiChu_Click();
         btnXoaGhiChu_Click();
+        etNoteTitle_TextChanged();
+        etNoteContent_TextChanged();
+
+        //Lấy log đăng nhập lưu trên máy
+        SharedPreferences preferences_login = getSharedPreferences("data_login", Context.MODE_PRIVATE);
+        String Email_Login = preferences_login.getString("email", "");
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("IntentCode", NOTE_CODE);
+            object.put("UserEmail", Email_Login);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         //Ẩn Nút Xoá Ghi Chú
         if(NOTE_CODE == ADD_CODE){
             btnXoaGhiChu.setVisibility(View.GONE);
+            SocketClient.emit("InitTaskNote", object);
         }
 
         //Load Nội Dung Ghi Chú và Hiện Nút Xoá Ghi Chú
         if(NOTE_CODE == EDIT_CODE){
+            SocketClient.emit("InitTaskNote", object);
             btnXoaGhiChu.setVisibility(View.VISIBLE);
 
             Bundle bundle = getIntent().getBundleExtra("NoteEdit_Bundle");
@@ -70,6 +104,60 @@ public class NoteDetailActivity extends AppCompatActivity {
             etNoteTitle.setText(note.getTitle());
             etNoteContent.setText(note.getContentNote());
         }
+    }
+
+    //Lắng Nghe Người Dùng Nhập Nội Dung Ghi Chú
+    private void etNoteContent_TextChanged() {
+        etNoteContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("ContentNote", etNoteContent.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                SocketClient.emit("UserTypingContentNote", object);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    //Lắng Nghe Người Dùng Nhập Nội Dung Tiêu Đề
+    private void etNoteTitle_TextChanged() {
+        etNoteTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("TitleContent", etNoteTitle.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                SocketClient.emit("UserTypingTitle", object);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void btnXoaGhiChu_Click() {
@@ -242,7 +330,6 @@ public class NoteDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
-                Log.e("Retrofit Error Loading Notes", t.getMessage());
             }
         });
     }

@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -82,20 +83,18 @@ public class RemindFragment extends Fragment {
         prb_loading_remind.setVisibility(View.VISIBLE);
         lvReminds.setVisibility(View.GONE);
 
-        Calendar calendar = Calendar.getInstance();
+        registerForContextMenu(lvReminds);
 
-        String Day = Integer.toString(calendar.DAY_OF_MONTH);
-        String Month = Integer.toString(calendar.MONTH);
-        String Year = Integer.toString(calendar.YEAR);
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+07:00"));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        String selectedDate = simpleDateFormat.format(calendar.getTime());
 
         SharedPreferences preferences = getActivity().getSharedPreferences("data_login", Context.MODE_PRIVATE);
         int user_id = preferences.getInt("user_id", -1);
 
-        if(user_id != -1){
-            GetNhacNho(user_id, Month + "-" + Day + "-" + Year);
+        if (user_id != -1) {
+            GetNhacNho(user_id, selectedDate);
         }
-
-        registerForContextMenu(lvReminds);
 
         return viewRemind;
     }
@@ -132,7 +131,7 @@ public class RemindFragment extends Fragment {
 
                 String selectedDate = Month + "-" + Day + "-" + Year;
 
-                if(user_id != -1){
+                if (user_id != -1) {
                     GetNhacNho(user_id, selectedDate);
                 }
             }
@@ -150,7 +149,7 @@ public class RemindFragment extends Fragment {
         });
     }
 
-    private void Init_Data(){
+    private void Init_Data() {
         btnOpenSearchRemind = (ImageButton) viewRemind.findViewById(R.id.btnOpenSearchRemind);
         btnOpenCreateRemind = (ImageButton) viewRemind.findViewById(R.id.btnThemNhacNho);
 
@@ -165,14 +164,14 @@ public class RemindFragment extends Fragment {
         cvRemind = (CalendarView) viewRemind.findViewById(R.id.cvRemind);
     }
 
-    private void btnOpenSearchRemind_Click(){
+    private void btnOpenSearchRemind_Click() {
         btnOpenSearchRemind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (container_search_remind.getVisibility() == View.GONE){
+                if (container_search_remind.getVisibility() == View.GONE) {
                     container_search_remind.setVisibility(View.VISIBLE);
                     etSearchRemind.setText("");
-                }else {
+                } else {
                     container_search_remind.setVisibility(View.GONE);
                     etSearchRemind.setText("");
                 }
@@ -184,7 +183,7 @@ public class RemindFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == ADD_REMIND && resultCode == getActivity().RESULT_OK){
+        if (requestCode == ADD_REMIND && resultCode == getActivity().RESULT_OK) {
             String selectedDate = data.getStringExtra("NgayThucHien");
 
             try {
@@ -196,12 +195,12 @@ public class RemindFragment extends Fragment {
             SharedPreferences preferences = getActivity().getSharedPreferences("data_login", Context.MODE_PRIVATE);
             int user_id = preferences.getInt("user_id", -1);
 
-            if(user_id != -1){
+            if (user_id != -1) {
                 GetNhacNho(user_id, selectedDate);
             }
         }
 
-        if(requestCode == EDIT_REMIND && resultCode == getActivity().RESULT_OK){
+        if (requestCode == EDIT_REMIND && resultCode == getActivity().RESULT_OK) {
             String selectedDate = data.getStringExtra("NgayThucHien");
 
             try {
@@ -213,13 +212,13 @@ public class RemindFragment extends Fragment {
             SharedPreferences preferences = getActivity().getSharedPreferences("data_login", Context.MODE_PRIVATE);
             int user_id = preferences.getInt("user_id", -1);
 
-            if(user_id != -1){
+            if (user_id != -1) {
                 GetNhacNho(user_id, selectedDate);
             }
         }
     }
 
-    private void GetNhacNho(int UserID, String date){
+    private void GetNhacNho(int UserID, String date) {
         DataClient dataClient = APIUtils.getData();
         Call<Message> call = dataClient.GetRemindByUserID(UserID, date);
         call.enqueue(new Callback<Message>() {
@@ -235,7 +234,7 @@ public class RemindFragment extends Fragment {
                         Reminds = message.getReminds();
                         RemindAdapter = new NhacNhoAdapter(getActivity(), Reminds);
                         lvReminds.setAdapter(RemindAdapter);
-                    }else {
+                    } else {
                         Reminds = message.getReminds();
                         RemindAdapter = new NhacNhoAdapter(getActivity(), Reminds);
                         lvReminds.setAdapter(RemindAdapter);
@@ -248,7 +247,6 @@ public class RemindFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
-                Log.e("Retrofit Error Loading Notes", t.getMessage());
             }
         });
     }
@@ -257,7 +255,7 @@ public class RemindFragment extends Fragment {
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        if(v.getId() == R.id.lvReminds){
+        if (v.getId() == R.id.lvReminds) {
             MenuInflater menuInflater = getActivity().getMenuInflater();
             menuInflater.inflate(R.menu.menu_item_remind, menu);
         }
@@ -267,7 +265,7 @@ public class RemindFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.im_XoaNhacNho:
                 XoaNhacNho(Reminds.get(menuInfo.position));
                 break;
@@ -276,7 +274,7 @@ public class RemindFragment extends Fragment {
         return super.onContextItemSelected(item);
     }
 
-    private void XoaNhacNho(Remind remind){
+    private void XoaNhacNho(Remind remind) {
         DataClient dataClient = APIUtils.getData();
         Call<Message> call = dataClient.DeleteRemind(remind.getRemindId());
         call.enqueue(new Callback<Message>() {
@@ -287,7 +285,7 @@ public class RemindFragment extends Fragment {
                 if (message != null) {
                     if (message.getSuccess() == 0) {
                         Toast.makeText(getActivity(), "Có Lỗi Xảy Ra", Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         GetNhacNho(remind.getUserId(), remind.getDateRemind());
                         Reminds.remove(remind);
                         RemindAdapter.notifyDataSetChanged();
@@ -300,7 +298,6 @@ public class RemindFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
-                Log.e("Retrofit Error Loading Notes", t.getMessage());
             }
         });
     }

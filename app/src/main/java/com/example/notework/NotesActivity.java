@@ -12,7 +12,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NotesActivity extends AppCompatActivity {
     Fragment selected_fragment;
-
     BottomNavigationView bottomNavigationView;
 
     @Override
